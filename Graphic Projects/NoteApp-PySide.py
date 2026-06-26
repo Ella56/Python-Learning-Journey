@@ -32,7 +32,7 @@ class NoteManager():
         
 
     
-    def get_note_by_id(self):
+    def get_note_by_id(self, id):
          for note_item in self.note_list:
             if note_item["id"] == id:
                 return note_item
@@ -55,8 +55,8 @@ class NoteApp(QMainWindow):
         self.note_list_widget.clear()
         for note_item in self.note_manager.get_note_list():
             list_item = QListWidgetItem()
-            list_item.setText(note_item["title"])
-            list_item.setData(1, note_item["id"])
+            list_item.setText(note_item["title"]) #for selecting items
+            list_item.setData(1, note_item["id"]) #id dor selecting item
             self.note_list_widget.addItem(list_item)
 
 
@@ -83,8 +83,11 @@ class NoteApp(QMainWindow):
 
         self.note_form_add_btn = QPushButton(text = "Add Note")
         self.note_form_update_btn = QPushButton(text = "Update Note")
+        self.note_form_update_btn.setEnabled(False) # in default they will be disable, when selecting an item they will be enable
         self.note_form_delete_btn = QPushButton(text = "Delete Note")
+        self.note_form_delete_btn.setEnabled(False)
         self.note_form_clear_btn = QPushButton(text = "Clear Note")
+        self.note_form_clear_btn.setEnabled(False)
 
 
 
@@ -135,7 +138,21 @@ class NoteApp(QMainWindow):
         self.note_form_update_btn.clicked.connect(self.update_note)
         self.note_form_delete_btn.clicked.connect(self.delete_note)
         self.note_form_clear_btn.clicked.connect(self.clear_selected_note)
-        
+        self.note_list_widget.itemClicked.connect(self.set_selected_note)
+
+
+    def set_selected_note(self,item):
+        id = item.data(1)
+        self.selected_item = id
+        note_item = self.note_manager.get_note_by_id(id)
+        self.note_form_title_entry.setText(note_item["title"])
+        self.note_form_description_entry.setText(note_item["description"])
+        self.note_form_add_btn.setEnabled(False)  #add note btn will be disabled during selecting an item
+        self.note_form_update_btn.setEnabled(True)
+        self.note_form_delete_btn.setEnabled(True)
+        self.note_form_clear_btn.setEnabled(True)
+
+
 
     def add_note(self):
         title = self.note_form_title_entry.text()
@@ -150,13 +167,22 @@ class NoteApp(QMainWindow):
         self.reload_note_list()
 
     def update_note(self):
-        pass
+        title = self.note_form_title_entry.text()
+        description = self.note_form_description_entry.toPlainText()
+        self.note_manager.update_note(self.selected_item,title,description)
+        self.reload_note_list()
 
     def delete_note(self):
-        pass
+        self.note_manager.delete_note(self.selected_item)
+        self.reload_note_list()
 
     def clear_selected_note(self):
-        pass
+        self.selected_item = None
+        self.note_form_add_btn.setEnabled(True)   
+        self.note_form_update_btn.setEnabled(False)
+        self.note_form_delete_btn.setEnabled(False)
+        self.note_form_clear_btn.setEnabled(False)
+
 
 
 
