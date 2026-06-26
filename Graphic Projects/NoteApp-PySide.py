@@ -8,7 +8,8 @@ import uuid
 
 class NoteManager():
     def __init__(self):
-        self.note_list = []
+        self.note_list = [{"id": "39268fff-8ef6-4521-a5c4-893bb24a8978", "title": "test 1", "description": "description testing 1"},
+                          {"id": "6fb7165a-d7a0-49cc-893d-d997bd9d184b", "title": "test 2", "description": "description testing 2"}]
 
 
     def add_note(self, title, description):
@@ -55,7 +56,6 @@ class NoteApp(QMainWindow):
         for note_item in self.note_manager.get_note_list():
             list_item = QListWidgetItem()
             list_item.setText(note_item["title"])
-            list_item.setText(note_item["id"])
             list_item.setData(1, note_item["id"])
             self.note_list_widget.addItem(list_item)
 
